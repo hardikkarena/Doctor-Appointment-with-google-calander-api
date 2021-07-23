@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.fields import DateTimeField
 from django.utils import timezone
 # Create your models here.
 
@@ -36,4 +37,28 @@ class Doctor(models.Model):
 
     def __str__(self):
         return self.First_Name
+
+class Category(models.Model):
+    Category_name = models.CharField(max_length=150)
+    Doctor = models.ForeignKey(Doctor,on_delete=models.CASCADE)
+
+
+    def __str__(self):
+        return self.Category_name
+
+class Post(models.Model):
+    Doctor = models.ForeignKey(Doctor,on_delete=models.CASCADE)
+    Title = models.CharField(max_length=150)
+    Image = models.ImageField(upload_to='Post_Images',)
+    Category = models.ForeignKey(Category,on_delete=models.CASCADE)
+    Summary = models.CharField(max_length=500)
+    Content = models.CharField(max_length=1000)
+    DateTimeOfPoast = models.DateTimeField()
+    Draft = models.BooleanField(default=False)
+    def __str__(self):
+        return self.Title
+
+    class Meta:
+        ordering = ['-DateTimeOfPoast']
+
 

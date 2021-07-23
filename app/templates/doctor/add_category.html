@@ -1,0 +1,60 @@
+{% extends "doctor/base.html" %}
+{% load static %}
+{% block content %}
+<div id="admin-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                {% if category %}
+
+                <h1 class="admin-heading">Update Category</h1>
+                {% else %}
+
+                <h1 class="admin-heading">Add New Category</h1>
+                {% endif %}
+            </div>
+            <div class="col-md-offset-3 col-md-6">
+                <!-- Form Start -->
+                {% if category %}
+                <form action="{% url 'update_category' key=category.id %}" method="POST" autocomplete="off">
+
+                {% else %}
+                <form action="{% url 'add_category' %}" method="POST" autocomplete="off">
+                {% endif %}
+                    {% csrf_token %} 
+                    <div class="form-group">
+                        <label>Category Name</label>
+                        <input type="text" name="category_name" class="form-control" placeholder="Category Name" value="{{category}}" required>
+                    </div>
+                    <input type="submit" name="save" class="btn btn-primary" value="Submit" required />
+                </form>
+                <!-- /Form End -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% if msg %}
+    {% if msg == 'Category Added successfully.' %}
+            <script>
+                Swal.fire(
+                    '',
+                    '{{msg}}',
+                    'success'
+                )
+            </script>
+    {% else %}
+    <script>
+        Swal.fire(
+            '',
+            '{{msg}}',
+            'warning'
+        )
+    </script>
+    {% endif %}
+
+
+
+{% endif %}
+  {% endblock content %}

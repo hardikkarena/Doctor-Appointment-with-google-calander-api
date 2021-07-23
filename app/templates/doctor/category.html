@@ -1,0 +1,70 @@
+{% extends "doctor/base.html" %}
+{% load static %}
+{% block content %}
+<div id="admin-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <h1 class="admin-heading">All Categories</h1>
+            </div>
+            <div class="col-md-2">
+                <a class="add-new" href="{% url 'add_category' %}">Add category</a>
+            </div>
+            <div class="col-md-12">
+                {% if category %}
+                <table class="content-table">
+                    <thead>
+                        <th>Sr No.</th>
+                        <th>Category Name</th>
+                        
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </thead>
+                    <tbody>
+                        {% for i in category %}
+                        <tr>
+                            <td class='id'>{{forloop.counter}}</td>
+                            <td>{{i.Category_name}}</td>
+                           
+                            <td class='edit'><a href="{% url 'update_category' key=i.id %}"><i class='fa fa-edit'></i></a></td>
+                            <td class='delete'><a href="{% url 'delete_category' key=i.id %}"><i class='fa fa-trash-o'></i></a></td>
+                        </tr>
+                        {% endfor %}
+                       
+                    </tbody>
+                </table>
+                <nav aria-label="..." class="float-right" style="margin-top: 20px;">
+
+                    <ul class="pagination ">
+                  
+                      {% if category.has_previous %}
+                      <li class="page-item">
+                        <a style="width: 80px;" class="page-link"  href="?page={{ category.previous_page_number }}">Previous</a>
+                      </li>
+                      {% endif %}
+    
+                      {% for i in category.paginator.page_range %}
+                      
+                        {% if category.number == i %}
+                          <li class="page-item active"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% else %}
+                          <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+      
+                      {% endfor %}
+                      {% if category.has_next %}
+                      <li class="page-item">
+                        <a style="width: 80px;" class="page-link"  href="?page={{ category.next_page_number }}">Next</a>
+                      </li>
+                      {% endif %}
+                    </ul>
+                  </nav>
+                  {% else %}
+                  <h1><b>There Is No Category</b></h1>
+                  {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+  {% endblock content %}
