@@ -23,6 +23,13 @@ path("add_post/<int:key>",views.delete_post,name="delete_post"),
 path("index/",views.index,name="index"),
 path("single_post/<int:key>",views.single_post,name="single_post"),
 
+path("doctors/",views.doctors,name="doctors"),
+path("book_appointment/",views.book_appointment,name="book_appointment"),
+path("patient_appointments/",views.patient_appointments,name="patient_appointments"),
+path("doctor_appointments/",views.doctor_appointments,name="doctor_appointments"),
+path("doctor_appointments_detail/",views.doctor_appointments_detail,name="doctor_appointments_detail"),
+path("Confirm_appointment/",views.Confirm_appointment,name="Confirm_appointment")
+
 
 
 

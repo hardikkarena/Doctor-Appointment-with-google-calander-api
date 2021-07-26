@@ -1,0 +1,185 @@
+{% extends "patient/base.html" %}
+{% load static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>My Appointment</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Abril+Fatface&display=swap" rel="stylesheet">
+
+	<link rel="stylesheet" href="{% static 'blog/css/open-iconic-bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'blog/css/animate.css' %}">
+
+	<link rel="stylesheet" href="{% static 'blog/css/owl.carousel.min.css' %}">
+	<link rel="stylesheet" href="{% static 'blog/css/owl.theme.default.min.css' %}">
+	<link rel="stylesheet" href="{% static 'blog/css/magnific-popup.css' %}">
+
+	<link rel="stylesheet" href="{% static 'blog/css/aos.css' %}">
+
+	<link rel="stylesheet" href="{% static 'blog/css/ionicons.min.css' %}">
+
+	<link rel="stylesheet" href="{% static 'blog/css/bootstrap-datepicker.css' %}">
+	<link rel="stylesheet" href="{% static 'blog/css/jquery.timepicker.css' %}">
+
+
+	<link rel="stylesheet" href="{% static 'blog/css/flaticon.css' %}">
+	<link rel="stylesheet" href="{% static 'blog/css/icomoon.css' %}">
+	<link rel="stylesheet" href="{% static 'blog/css/style.css' %}">
+</head>
+
+<body>
+
+	<div id="colorlib-page">
+		<a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle"><i></i></a>
+		<aside id="colorlib-aside" role="complementary" class="js-fullheight">
+			<nav id="colorlib-main-menu" role="navigation">
+				<ul>
+					<li class="colorlib"><a href="{% url 'index' %}">Home</a></li>
+					<li class="colorlib-active"><a href="{% url 'patient_appointments' %}">My Appointment</a></li>
+					<li class="colorlib-"><a href="{% url 'doctors' %}">Book Appointment</a></li>
+					<li><a href="{% url 'dashboard' %}">Profile</a></li>
+					<li><a href="{% url 'logout' %}">Logout</a></li>
+
+				</ul>
+			</nav>
+
+			<div class="colorlib-footer">
+			
+
+				</div>
+				
+			</div>
+		</aside> <!-- END COLORLIB-ASIDE -->
+		<div id="colorlib-main">
+			<section class="ftco-section ftco-no-pt ftco-no-pb">
+				<div class="container">
+					<div class="row d-flex">
+						
+							
+
+							
+                        
+                          {% if appointment %}
+              
+              
+                          <div class="table-responsive" style="margin-top: 19px;">
+                            <table class="table align-items-center table-flush table-striped">
+                              <thead class="thead-light">
+                                <tr>
+                                    <th>Sr No.</th>
+                                  <th >Date</th>
+                                  <th >Start Time </th>
+                                  <th >End Time </th>
+
+                                  <th>Doctor's NAme </th>    
+                                  <th>Doctor's Profile Picture </th>    
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {% for i in appointment %}
+              
+                                <tr style="background-color: white;">
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{i.Date_of_Appointment}}</td>
+                                    <td>{{i.Start_Time_of_Appointment}}</td>
+                                    <td>{{i.End_Time_of_Appointment}}</td>
+                                    <td>{{i.Doctor.First_Name}} {{i.Doctor.Last_Name}}</td>
+                                  <td class="table-user">
+                                    <img src="{{i.Doctor.Profile_Picture.url}}" style="height: 100px;border-radius: 54px;margin-left: 30%;">
+                                    
+                                  </td>
+                                
+              
+                                  
+                                    <!-- <a href="#!" class="table-action" data-toggle="tooltip" data-original-title="View Profile">
+                                    <i class="fa fa-eye"></i>
+                                  </a>
+                                  <a href="#!" class="table-action table-action-delete" data-toggle="tooltip" data-original-title="Make Request">
+                                    <i class="fa fa-plus"></i>
+                                  </a> -->
+                                  
+                                </tr>
+              
+                                {% endfor %}
+              
+                              </tbody>
+                            </table>
+                          </div>
+						  <div class="row">
+                            <div class="col">
+                              <div class="block-27">
+                                <ul>
+                                  <nav aria-label="..." class="float-right" style="margin-top: 20px;margin-left: 700px;">
+            
+                                                            <ul class="pagination ">
+                                                          
+                                                              {% if appointment.has_previous %}
+                                                              <li class="page-item">
+                                                                <a style="width: 80px;" class="page-link"  href="?page={{ appointment.previous_page_number }}">Previous</a>
+                                                              </li>
+                                                              {% endif %}
+                                            
+                                                              {% for i in appointment.paginator.page_range %}
+                                                              
+                                                                {% if appointment.number == i %}
+                                                                  <li class="page-item active"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                                                {% else %}
+                                                                  <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                                                {% endif %}
+                                              
+                                                              {% endfor %}
+                                                              {% if appointment.has_next %}
+                                                              <li class="page-item">
+                                                                <a style="width: 80px;" class="page-link"  href="?page={{ appointment.next_page_number }}">Next</a>
+                                                              </li>
+                                                              {% endif %}
+                                                            </ul>
+                                                          </nav>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+
+{% else %}
+<h1><b>There Is No Appointment Booked</b></h1>
+{% endif %}
+						</div><!-- END COL -->
+					</div>
+				</div>
+			</section>
+		</div><!-- END COLORLIB-MAIN -->
+	</div><!-- END COLORLIB-PAGE -->
+
+	<!-- loader -->
+	<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px">
+			<circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
+			<circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10"
+				stroke="#F96D00" /></svg></div>
+
+
+	<script src="{% static 'blog/js/jquery.min.js' %}"></script>
+	<script src="{% static 'blog/js/jquery-migrate-3.0.1.min.js' %}"></script>
+	<script src="{% static 'blog/js/popper.min.js' %}"></script>
+	<script src="{% static 'blog/js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'blog/js/jquery.easing.1.3.js' %}"></script>
+	<script src="{% static 'blog/js/jquery.waypoints.min.js' %}"></script>
+	<script src="{% static 'blog/js/jquery.stellar.min.js' %}"></script>
+	<script src="{% static 'blog/js/owl.carousel.min.js' %}"></script>
+	<script src="{% static 'blog/js/jquery.magnific-popup.min.js' %}"></script>
+	<script src="{% static 'blog/js/aos.js' %}"></script>
+	<script src="{% static 'blog/js/jquery.animateNumber.min.js' %}"></script>
+	<script src="{% static 'blog/js/scrollax.min.js' %}"></script>
+	
+	<script src="{% static 'blog/js/main.js' %}"></script>
+
+</body>
+
+</html>
+{% endblock content %}

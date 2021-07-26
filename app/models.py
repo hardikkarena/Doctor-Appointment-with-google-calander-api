@@ -61,4 +61,21 @@ class Post(models.Model):
     class Meta:
         ordering = ['-DateTimeOfPoast']
 
+class Appointment(models.Model):
+    Patient = models.ForeignKey(Patient,on_delete=models.CASCADE)
+    Doctor = models.ForeignKey(Doctor,on_delete=models.CASCADE)
+    Required_speciality = models.CharField(max_length=150)
+    Date_of_Appointment = models.DateField()
+    Start_Time_of_Appointment = models.TimeField()
+    End_Time_of_Appointment = models.TimeField()
+    Contect = models.BigIntegerField()
+    Status = models.CharField(max_length=20,default="Pending")
+
+ 
+
+
+
+
+
+
 

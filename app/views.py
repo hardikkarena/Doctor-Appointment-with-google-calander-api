@@ -4,6 +4,27 @@ from .models import *
 from django.contrib.auth.hashers import make_password,check_password
 import datetime
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
+
+from datetime import timedelta
+from datetime import date
+from datetime import datetime
+from datetime import *
+
+
+from google_auth_oauthlib.flow import Flow, InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from google.auth.transport.requests import Request
+import pytz
+from google.oauth2 import service_account
+
+import os
+
+
+
+
+
 # Create your views here.
 def Singup(request):
     if request.method=="POST":
@@ -417,3 +438,173 @@ def single_post(request,key):
 
 
     
+def doctors(request):
+    doctor =Doctor.objects.all()
+    paginator = Paginator(doctor,3)
+    page = request.GET.get('page')
+    paged_doctor = paginator.get_page(page)  
+    data = {
+        'doctor' : paged_doctor
+    }
+    return render(request,"patient/doctors.html",data)
+
+def book_appointment(request):
+    if request.method=="POST":
+        required_speciality = request.POST['required_speciality']
+        date_of_appointment = request.POST['date_of_appointment']
+        start_time_of_appointment = request.POST['start_time_of_appointment'] 
+        contect = request.POST['contect']
+        doctor_id = request.POST['doctor_id']
+
+
+        id=request.session.get("id")
+        user = User_Master.objects.get(id=id)
+        patient = Patient.objects.get(User_Master=user)
+        doctor =Doctor.objects.get(id=doctor_id)
+        
+
+       
+        temp = date_of_appointment+" "+start_time_of_appointment+":0.00"
+        date_time_obj = datetime.strptime(temp, '%Y-%m-%d %H:%M:%S.%f')
+        start = date_time_obj
+        end = date_time_obj + timedelta(minutes=45)
+        end_time_of_appointment = end.time()
+        
+        
+        data = {
+            'doctor_id' : doctor_id
+        }
+        
+        GDRAT_abs_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'client_secret.json')
+        scopes = ['https://www.googleapis.com/auth/calendar']
+        flow = InstalledAppFlow.from_client_secrets_file(GDRAT_abs_path, scopes=scopes)
+        credentials = flow.run_local_server()
+        service = build("calendar", "v3", credentials=credentials)
+
+        event_request_body = {
+            'start' : {
+                'dateTime' : start.isoformat(),
+                'timeZone' : 'Asia/Kolkata'
+            },
+            'end' : {
+                'dateTime' : (start + timedelta(minutes=45)).isoformat(),
+                'timeZone' : 'Asia/Kolkata'
+            },
+            'summary' : 'Doctor Appointment',
+            'description' : doctor.First_Name + " "+ doctor.Last_Name + "'s Appointment",
+            'colorId' : '4',
+            'status' : 'confirmed',
+            
+        }
+        response3 = service.events().insert(
+            calendarId='primary', body=event_request_body
+        ).execute()
+
+        new_appointment = Appointment.objects.create(
+            Patient = patient,
+            Doctor = doctor,
+            Required_speciality = required_speciality,
+            Date_of_Appointment = date_of_appointment,
+            Start_Time_of_Appointment = start_time_of_appointment,
+            End_Time_of_Appointment = end_time_of_appointment,
+            Contect = contect
+        )
+
+        return redirect('patient_appointments')
+    else:
+
+        doctor_id = request.GET.get('id')
+        data = {
+            'doctor_id' : doctor_id
+        }
+
+        return render(request,"patient/book_appointment.html",data)
+
+
+
+def patient_appointments(request):
+    id=request.session.get("id")
+    user = User_Master.objects.get(id=id)
+    patient = Patient.objects.get(User_Master=user)
+    appointment = Appointment.objects.filter(Patient=patient)
+
+    paginator = Paginator(appointment,3)
+    page = request.GET.get('page')
+    paged_appointment = paginator.get_page(page)
+    print(appointment)
+    
+    data = {
+        'appointment':paged_appointment
+    }
+    return render(request,"patient/patient_appointments.html",data)
+
+def doctor_appointments(request):
+    id=request.session.get("id")
+    user = User_Master.objects.get(id=id)
+    doctor = Doctor.objects.get(User_Master=user)
+    appointment = Appointment.objects.filter(Doctor=doctor) 
+    paginator = Paginator(appointment,5)
+    page = request.GET.get('page')
+    paged_appointment = paginator.get_page(page)   
+    data = {
+        'appointment':paged_appointment
+    }
+    return render(request,"doctor/doctor_appointments.html",data)
+    
+
+def doctor_appointments_detail(request):
+    appointment_id = request.GET.get('id')
+    appointment = Appointment.objects.get(id=appointment_id)
+    data = {
+        'appointment':appointment
+    }
+    return render(request,"doctor/doctor_appointments_detail.html",data)
+
+
+def Confirm_appointment(request):
+    appointment_id = request.GET.get('id')
+    appointment = Appointment.objects.get(id=appointment_id)
+   
+    print("----------------------------------")
+
+    start = datetime(
+        appointment.Date_of_Appointment.year,
+        appointment.Date_of_Appointment.month,
+        appointment.Date_of_Appointment.day,
+        appointment.Start_Time_of_Appointment.hour,
+        appointment.Start_Time_of_Appointment.minute,
+        appointment.Start_Time_of_Appointment.second,
+        appointment.Start_Time_of_Appointment.microsecond,
+
+
+    )
+    
+    GDRAT_abs_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'client_secret.json')
+    scopes = ['https://www.googleapis.com/auth/calendar']
+    flow = InstalledAppFlow.from_client_secrets_file(GDRAT_abs_path, scopes=scopes)
+    credentials = flow.run_local_server()
+    service = build("calendar", "v3", credentials=credentials)
+
+    event_request_body = {
+            'start' : {
+                'dateTime' : start.isoformat(),
+                'timeZone' : 'Asia/Kolkata'
+            },
+            'end' : {
+                'dateTime' : (start + timedelta(minutes=45)).isoformat(),
+                'timeZone' : 'Asia/Kolkata'
+            },
+            'summary' : 'Patient Appointment',
+            'description' : appointment.Patient.First_Name + " "+ appointment.Patient.Last_Name + "'s Appointment",
+            'colorId' : '4',
+            'status' : 'confirmed',
+            
+    }
+    response3 = service.events().insert(
+            calendarId='primary', body=event_request_body
+    ).execute()
+    
+    appointment.Status = "Confirmed"
+    appointment.save()
+   
+    return redirect('doctor_appointments')

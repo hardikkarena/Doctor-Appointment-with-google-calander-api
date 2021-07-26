@@ -1,0 +1,108 @@
+{% extends "doctor/base.html" %}
+{% load static %}
+{% block content %}
+
+{% if appointment %}
+              
+              
+                          <div class="table-responsive" style="margin-top: 19px;">
+                            <table class="table align-items-center table-flush table-striped">
+                              <thead class="thead-light">
+                                <tr>
+                                    <th>Sr No.</th>
+                                  <th >Date</th>
+                                  <th >Start Time </th>
+                                  <th >End Time </th>
+                                    <th>Required Speciality</th>
+                                  <th>Patient's Name </th>    
+                                  <th>Patient's Contect</th>    
+                                  <th> Status</th>    
+                                  <th>View</th>    
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {% for i in appointment %}
+              
+                                <tr style="background-color: white;">
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{i.Date_of_Appointment}}</td>
+                                    <td>{{i.Start_Time_of_Appointment}}</td>
+                                    <td>{{i.End_Time_of_Appointment}}</td>
+                                    <td>{{i.Required_speciality}} </td>
+                                    <td>{{i.Patient.First_Name}} {{i.Patient.Last_Name}} </td>
+                                  <td class="table-user">
+                                    {{i.Contect}}
+                                    
+                                  </td>
+                                  <td>
+
+                                    {% if i.Status == 'Confirmed' %}
+                                <span class="badge bg-success">Confirmed</span>
+                           {% else %}
+                                <span class="badge bg-danger">Pending</span>
+                           {% endif %}
+                                  </td>
+                                <td>
+                                  <div>
+                                    <a href="{% url 'doctor_appointments_detail' %}?id={{i.id}}" class="table-action" data-toggle="tooltip"
+                                      data-original-title="View Appointment">
+                                      <button type="button" style="border-radius: 50px;" class="btn btn-primary">
+                                        <i class="far fa-eye">
+                                        </i>
+                                      </button>
+                                    </a>
+            
+            
+            
+            
+            
+                                  </div>
+                                  
+                                </td>
+                                </tr>
+              
+                                {% endfor %}
+              
+                              </tbody>
+                            </table>
+                          </div>
+                          <div class="row">
+                            <div class="col">
+                              <div class="block-27">
+                                <ul>
+                                  <nav aria-label="..." class="float-right" style="margin-top: 20px;">
+            
+                                                            <ul class="pagination ">
+                                                          
+                                                              {% if appointment.has_previous %}
+                                                              <li class="page-item">
+                                                                <a style="width: 80px;" class="page-link"  href="?page={{ appointment.previous_page_number }}">Previous</a>
+                                                              </li>
+                                                              {% endif %}
+                                            
+                                                              {% for i in appointment.paginator.page_range %}
+                                                              
+                                                                {% if appointment.number == i %}
+                                                                  <li class="page-item active"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                                                {% else %}
+                                                                  <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                                                {% endif %}
+                                              
+                                                              {% endfor %}
+                                                              {% if appointment.has_next %}
+                                                              <li class="page-item">
+                                                                <a style="width: 80px;" class="page-link"  href="?page={{ appointment.next_page_number }}">Next</a>
+                                                              </li>
+                                                              {% endif %}
+                                                            </ul>
+                                                          </nav>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          {% else %}
+                          <h1><b>There Is No Appointment</b></h1>
+
+{% endif %}
+
+{% endblock content %}
